@@ -2,5 +2,6 @@
 /Cargo.lock
 /bytepiece.model
 /bytepiece_rs.model
+/bytepiece_rs-multi.model
 /.idea
 /data
