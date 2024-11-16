@@ -1,6 +1,8 @@
 # bytepiece algorithm of rust implement
-> 根据苏剑林大神的实现 `bojone/bytepiece`, 使用rust的重构版本, 包含`bytepiece_rs`lib , `bytepiece_cli`bin, `bytepiece_py`python lib三个部分
-
+> 根据苏剑林大神的实现 [bytepiece](https://github.com/bojone/bytepiece), 使用rust的重构版本, 包含`bytepiece_rs`lib , `bytepiece_cli`bin, `bytepiece_py`python lib三个部分
+## 算法原理
+- https://kexue.fm/archives/9752
+- https://kexue.fm/archives/9768
 ## bytepiece-cli
 ```bash
 # train with default
