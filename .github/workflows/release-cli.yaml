@@ -1,0 +1,156 @@
+name: Build Bytepiece CLI
+
+on:
+  push:
+    branches:
+      - '[0-9].[1-9]|1[0-9].[0-9]|1[0-9]-cli'  # 匹配版本格式
+    tags:
+      - 'v[0-9].[1-9]|1[0-9].[0-9]|1[0-9]'
+    pull_request:
+      branches:
+        - '[0-9].[1-9]|1[0-9].[0-9]|1[0-9]-cli'
+
+env:
+  CARGO_TERM_COLOR: always
+  RUST_BACKTRACE: 1
+  BINARY_NAME: bytepiece-trainer
+
+jobs:
+  build:
+    name: Build ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    if: contains(github.ref, '-cli') || startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Windows
+          - os: windows-latest
+            target: x86_64-pc-windows-msvc
+            suffix: .exe
+            archive: zip
+
+          # Linux
+          - os: ubuntu-latest
+            target: x86_64-unknown-linux-gnu
+            suffix: ""
+            archive: tar.gz
+
+          # macOS
+          - os: macos-latest
+            target: x86_64-apple-darwin
+            suffix: ""
+            archive: tar.gz
+          - os: macos-latest
+            target: aarch64-apple-darwin
+            suffix: ""
+            archive: tar.gz
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Get Version
+        id: get_version
+        shell: bash
+        run: |
+          if [[ $GITHUB_REF == refs/tags/* ]]; then
+            VERSION=${GITHUB_REF#refs/tags/}
+          else
+            VERSION=$(echo $GITHUB_REF | grep -oP '\d+\.\d+\.\d+(?=-cli)')
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - name: Rust Cache
+        uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Build Binary
+        run: |
+          cargo build --release --target ${{ matrix.target }}
+
+      - name: Package Binary
+        shell: bash
+        run: |
+          mkdir -p release
+          cd target/${{ matrix.target }}/release
+          
+          BINARY_FILE=${{ env.BINARY_NAME }}${{ matrix.suffix }}
+          mv ${{ env.BINARY_NAME }}${{ matrix.suffix }} $BINARY_FILE
+          
+          if [[ "${{ matrix.os }}" != "windows-latest" ]]; then
+            chmod +x $BINARY_FILE
+          fi
+          
+          ARCHIVE_NAME=${{ env.BINARY_NAME }}-${{ steps.get_version.outputs.version }}-${{ matrix.target }}
+          
+          if [[ "${{ matrix.archive }}" == "zip" ]]; then
+            7z a ../../../release/$ARCHIVE_NAME.zip $BINARY_FILE
+          else
+            tar czf ../../../release/$ARCHIVE_NAME.tar.gz $BINARY_FILE
+          fi
+
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: ${{ env.BINARY_NAME }}-${{ matrix.target }}
+          path: release/*
+
+  release:
+    name: Create Release
+    needs: build
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    steps:
+      - name: Download Artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: artifacts/**/*
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## BytePiece Trainer CLI ${{ github.ref_name }}
+            
+            ### Supported Platforms
+            - Windows (x86_64)
+            - Linux (x86_64)
+            - macOS (x86_64, ARM64)
+            
+            ### Installation
+            Download the appropriate binary for your platform and add it to your PATH.
+            
+            ### Usage
+            ```bash
+            bytepiece-trainer --help
+            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  test:
+    name: Test on ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    if: contains(github.ref, '-cli')
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest, macos-latest]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Run Tests
+        run: cargo test --verbose

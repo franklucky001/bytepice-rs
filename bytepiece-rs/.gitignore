@@ -1,0 +1,6 @@
+/target
+/Cargo.lock
+/bytepiece.model
+/bytepiece_rs.model
+/.idea
+/data

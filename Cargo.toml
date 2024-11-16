@@ -1,0 +1,10 @@
+[workspace]
+resolver = "2"
+members = [
+    "bytepiece-rs",
+    "bytepiece-cli",
+    "bytepiece-py"
+]
+
+[workspace.dependencies]
+bytepiece-rs = {path = "bytepiece-rs"}
