@@ -45,7 +45,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: wheels-macos-${{ matrix.target }}
-          path: ./bytepiece-py/dist
+          path: ./target/wheels/*.whl
 
   windows:
     runs-on: windows-latest
@@ -77,7 +77,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: wheels-windows
-          path: ./bytepiece-py/dist
+          path: ./target/wheels/*.whl
 
   linux:
     runs-on: ubuntu-latest
@@ -116,7 +116,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: wheels-linux-${{ matrix.target }}-${{ matrix.manylinux }}
-          path: ./bytepiece-py/dist
+          path: ./target/wheels/*.whl
 
   sdist:
     runs-on: ubuntu-latest
@@ -137,7 +137,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: wheels-sdist
-          path: ./bytepiece-py/dist
+          path: ./target/dist/
 
   release:
     name: Release
