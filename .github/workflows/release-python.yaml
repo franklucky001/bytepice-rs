@@ -11,8 +11,6 @@ on:
   release:
     types: [ created ]
 
-env:
-  ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION=true
 
 jobs:
   macos:
@@ -30,6 +28,8 @@ jobs:
           targets: ${{ matrix.target }}-apple-darwin
 
       - uses: actions/setup-python@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install pip
@@ -62,6 +62,8 @@ jobs:
           targets: x86_64-pc-windows-msvc
 
       - uses: actions/setup-python@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           python-version: ${{ matrix.python-version }}
           architecture: x64
@@ -96,6 +98,8 @@ jobs:
           targets: ${{ matrix.target }}-unknown-linux-gnu
 
       - uses: actions/setup-python@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           python-version: ${{ matrix.python-version }}
       - name: Install pip
