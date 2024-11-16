@@ -91,9 +91,9 @@ jobs:
           ARCHIVE_NAME=${{ env.BINARY_NAME }}-${{ steps.get_version.outputs.version }}-${{ matrix.target }}
           
           if [[ "${{ matrix.archive }}" == "zip" ]]; then
-            7z a ../../../release/$ARCHIVE_NAME.zip $BINARY_FILE
+            7z a target/release/$ARCHIVE_NAME.zip $BINARY_FILE
           else
-            tar czf ../../../release/$ARCHIVE_NAME.tar.gz $BINARY_FILE
+            tar czf target/release/$ARCHIVE_NAME.tar.gz $BINARY_FILE
           fi
 
       - name: Upload Artifact
@@ -134,7 +134,7 @@ jobs:
             
             ### Usage
             ```bash
-            bytepiece-trainer --help
+            bytepiece-cli --help
             ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

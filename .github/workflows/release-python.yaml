@@ -36,9 +36,8 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          working-directory: ./bytepiece-py
           target: ${{ matrix.target }}
-          args: --release --out dist --manifest-path ../Cargo.toml
+          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
           sccache: 'true'
 
       - name: Upload wheels
@@ -70,7 +69,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           working-directory: ./bytepiece-py
-          args: --release --out dist --manifest-path ../Cargo.toml
+          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
           sccache: 'true'
 
       - name: Upload wheels
@@ -102,13 +101,12 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          working-directory: ./bytepiece-py
           target: ${{ matrix.target }}
           manylinux: ${{ matrix.manylinux }}
           args: >-
             --release 
             --out dist 
-            --manifest-path ../Cargo.toml
+            --manifest-path bytepiece-py/Cargo.toml
             ${{ matrix.manylinux == 'manylinux2014' && '--compatibility manylinux2014' || '' }}
           sccache: 'true'
 
@@ -129,9 +127,8 @@ jobs:
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
-          working-directory: ./bytepiece-py
           command: sdist
-          args: --out dist --manifest-path ../Cargo.toml
+          args: --out dist --manifest-path bytepiece-py/Cargo.toml
 
       - name: Upload sdist
         uses: actions/upload-artifact@v3
