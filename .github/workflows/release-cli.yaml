@@ -1,14 +1,15 @@
+# .github/workflows/release-cli.yml
 name: Build Bytepiece CLI
 
 on:
+  # 支持本地创建标签并推送
   push:
-    branches:
-      - '[0-9].[1-9]|1[0-9].[0-9]|1[0-9]-cli'  # 匹配版本格式
     tags:
-      - 'v[0-9].[1-9]|1[0-9].[0-9]|1[0-9]'
-    pull_request:
-      branches:
-        - '[0-9].[1-9]|1[0-9].[0-9]|1[0-9]-cli'
+      - '[0-9]+.[0-9]+.[0-9]+-cli'
+
+  # 支持从网页创建 release
+  release:
+    types: [ created ]
 
 env:
   CARGO_TERM_COLOR: always
