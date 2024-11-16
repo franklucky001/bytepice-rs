@@ -146,6 +146,8 @@ jobs:
     needs: [macos, windows, linux, sdist]
     steps:
       - uses: actions/download-artifact@v3
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
         with:
           path: dist
 
@@ -162,7 +164,7 @@ jobs:
           draft: false
           prerelease: false
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.RELEASE_TOKEN }}
 
 #      - name: Publish to PyPI
 #        uses: PyO3/maturin-action@v1
