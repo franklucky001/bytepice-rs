@@ -36,22 +36,24 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
+          command: build
           target: ${{ matrix.target }}
-          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
-          sccache: 'true'
+          args: >
+            --profile dist-release
+            --manifest-path bytepiece-py/Cargo.toml
+            --out dist
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
-          name: wheels-macos-${{ matrix.target }}
-          path: ./target/wheels/*.whl
+          name: wheels
+          path: dist/*.whl
 
   windows:
     runs-on: windows-latest
     strategy:
       matrix:
         python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-        target: [x64]
     steps:
       - uses: actions/checkout@v4
 
@@ -63,20 +65,23 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
-          architecture: ${{ matrix.target }}
+          architecture: x64
+      - name: Install pip
+        run: |
+          python -m ensurepip --upgrade
+          python -m pip install --upgrade pip
 
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          working-directory: ./bytepiece-py
+          target: x64
           args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
-          sccache: 'true'
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
-          name: wheels-windows
-          path: ./target/wheels/*.whl
+          name: wheels
+          path: dist/*.whl
 
   linux:
     runs-on: ubuntu-latest
@@ -84,9 +89,6 @@ jobs:
       matrix:
         python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
         target: [ x86_64, aarch64 ]
-        manylinux:
-          - manylinux_2_28  # GLIBC 2.28+ (较新的系统)
-          - manylinux2014   # GLIBC 2.17+ (较广泛的兼容性)
     steps:
       - uses: actions/checkout@v4
 
@@ -97,24 +99,23 @@ jobs:
       - uses: actions/setup-python@v4
         with:
           python-version: ${{ matrix.python-version }}
+      - name: Install pip
+        run: |
+          python -m ensurepip --upgrade
+          python -m pip install --upgrade pip
 
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.target }}
-          manylinux: ${{ matrix.manylinux }}
-          args: >-
-            --release 
-            --out dist 
-            --manifest-path bytepiece-py/Cargo.toml
-            ${{ matrix.manylinux == 'manylinux2014' && '--compatibility manylinux2014' || '' }}
-          sccache: 'true'
+          manylinux: auto
+          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
         with:
-          name: wheels-linux-${{ matrix.target }}-${{ matrix.manylinux }}
-          path: ./target/wheels/*.whl
+          name: wheels
+          path: dist/*.whl
 
   sdist:
     runs-on: ubuntu-latest
@@ -134,7 +135,7 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: wheels-sdist
-          path: ./target/dist/
+          path: dist/
 
   release:
     name: Release
