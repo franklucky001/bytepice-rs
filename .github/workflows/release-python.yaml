@@ -13,83 +13,84 @@ on:
 
 
 jobs:
-#  macos:
-#    runs-on: macos-latest
-#    strategy:
-#      matrix:
-#        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-#        target: [x86_64, aarch64]
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      # 设置Rust工具链
-#      - uses: dtolnay/rust-toolchain@stable
-#        with:
-#          targets: ${{ matrix.target }}-apple-darwin
-#
-#      - uses: actions/setup-python@v4
-#        env:
-#          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#      - name: Install pip
-#        run: |
-#          python -m ensurepip --upgrade
-#          python -m pip install --upgrade pip
-#      - name: Build wheels
-#        uses: PyO3/maturin-action@v1
-#        with:
-#          target: ${{ matrix.target }}
-#          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
-#
-#      - name: Upload wheels
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: wheels
-#          path: dist/*.whl
-#
-#  windows:
-#    runs-on: windows-latest
-#    strategy:
-#      matrix:
-#        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
-#    steps:
-#      - uses: actions/checkout@v4
-#
-#      # 设置Rust工具链
-#      - uses: dtolnay/rust-toolchain@stable
-#        with:
-#          targets: x86_64-pc-windows-msvc
-#
-#      - uses: actions/setup-python@v4
-#        env:
-#          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
-#        with:
-#          python-version: ${{ matrix.python-version }}
-#          architecture: x64
-#      - name: Install pip
-#        run: |
-#          python -m ensurepip --upgrade
-#          python -m pip install --upgrade pip
-#
-#      - name: Build wheels
-#        uses: PyO3/maturin-action@v1
-#        with:
-#          target: x64
-#          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
-#
-#      - name: Upload wheels
-#        uses: actions/upload-artifact@v3
-#        with:
-#          name: wheels
-#          path: dist/*.whl
+  macos:
+    runs-on: macos-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+        target: [x86_64, aarch64]
+    steps:
+      - uses: actions/checkout@v4
+
+      # 设置Rust工具链
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}-apple-darwin
+
+      - uses: actions/setup-python@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install pip
+        run: |
+          python -m ensurepip --upgrade
+          python -m pip install --upgrade pip
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: ${{ matrix.target }}
+          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist/*.whl
+
+  windows:
+    runs-on: windows-latest
+    strategy:
+      matrix:
+        python-version: ['3.8', '3.9', '3.10', '3.11', '3.12']
+    steps:
+      - uses: actions/checkout@v4
+
+      # 设置Rust工具链
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: x86_64-pc-windows-msvc
+
+      - uses: actions/setup-python@v4
+        env:
+          ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: true
+        with:
+          python-version: ${{ matrix.python-version }}
+          architecture: x64
+      - name: Install pip
+        run: |
+          python -m ensurepip --upgrade
+          python -m pip install --upgrade pip
+
+      - name: Build wheels
+        uses: PyO3/maturin-action@v1
+        with:
+          target: x64
+          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
+
+      - name: Upload wheels
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheels
+          path: dist/*.whl
 
   linux:
     runs-on: ubuntu-latest
     strategy:
       matrix:
         python-version: [ '3.8', '3.9', '3.10', '3.11', '3.12' ]
-        target: [x86_64]
+        target: [x86_64, aarch64]
+        manylinux: ['2014', '2_24', '2_28']
     steps:
       - uses: actions/checkout@v4
 
@@ -110,9 +111,8 @@ jobs:
       - name: Build wheels
         uses: PyO3/maturin-action@v1
         with:
-          before-script-linux: which maturin && whereis python && pip3 -V
           target: ${{ matrix.target }}
-          manylinux: auto
+          manylinux: ${{ matrix.manylinux }}
           args: --release -i python${{ matrix.python-version }} --out dist --manifest-path bytepiece-py/Cargo.toml
 
       - name: Upload wheels
