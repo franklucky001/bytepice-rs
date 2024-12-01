@@ -113,7 +113,7 @@ jobs:
           before-script-linux: which maturin && whereis python && pip3 -V
           target: ${{ matrix.target }}
           manylinux: auto
-          args: --release --out dist --manifest-path bytepiece-py/Cargo.toml
+          args: --release -i python${{ matrix.python-version }} --out dist --manifest-path bytepiece-py/Cargo.toml
 
       - name: Upload wheels
         uses: actions/upload-artifact@v3
