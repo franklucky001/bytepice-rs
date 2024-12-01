@@ -73,7 +73,7 @@ jobs:
 
       - name: Build Binary
         run: |
-          cargo build --manifest-path bytepiece-cli --release --target ${{ matrix.target }}
+          cargo build --manifest-path bytepiece-cli/Cargo.toml --release --target ${{ matrix.target }}
 
       - name: Package Binary
         shell: bash
