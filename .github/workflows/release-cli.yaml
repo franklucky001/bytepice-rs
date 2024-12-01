@@ -14,7 +14,7 @@ on:
 env:
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: 1
-  BINARY_NAME: bytepiece-trainer
+  BINARY_NAME: bytepiece-cli
 
 jobs:
   build:
@@ -73,7 +73,7 @@ jobs:
 
       - name: Build Binary
         run: |
-          cargo build --release --target ${{ matrix.target }}
+          cargo build --manifest-path bytepiece-cli --release --target ${{ matrix.target }}
 
       - name: Package Binary
         shell: bash
