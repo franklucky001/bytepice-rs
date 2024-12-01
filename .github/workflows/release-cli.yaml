@@ -82,7 +82,7 @@ jobs:
           cd target/${{ matrix.target }}/release
           
           BINARY_FILE=${{ env.BINARY_NAME }}${{ matrix.suffix }}
-          mv ${{ env.BINARY_NAME }}${{ matrix.suffix }} $BINARY_FILE
+#          mv ${{ env.BINARY_NAME }}${{ matrix.suffix }} $BINARY_FILE
           
           if [[ "${{ matrix.os }}" != "windows-latest" ]]; then
             chmod +x $BINARY_FILE
