@@ -80,15 +80,11 @@ jobs:
         run: |
           mkdir -p release
           cd target/${{ matrix.target }}/release
-          
           BINARY_FILE=${{ env.BINARY_NAME }}${{ matrix.suffix }}
-
           if [[ "${{ matrix.os }}" != "windows-latest" ]]; then
             chmod +x $BINARY_FILE
           fi
-          
           ARCHIVE_NAME=${{ env.BINARY_NAME }}-${{ steps.get_version.outputs.version }}-${{ matrix.target }}
-          
           if [[ "${{ matrix.archive }}" == "zip" ]]; then
             7z a ../../release/$ARCHIVE_NAME.zip $BINARY_FILE
           else
@@ -98,7 +94,7 @@ jobs:
       - name: Upload Artifact
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ env.BINARY_NAME }}-${{ matrix.target }}
+          name: ${{ env.$ARCHIVE_NAME }}.${{ matrix.archive }}
           path: release/*
 
   release:
